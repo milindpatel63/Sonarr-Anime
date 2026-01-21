@@ -13,7 +13,7 @@ COPY frontend ./frontend
 RUN yarn build
 
 # ---------- Backend ----------
-FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_RUNTIME_VERSION} AS backend
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION} AS backend
 WORKDIR /build
 
 COPY global.json ./
@@ -24,13 +24,28 @@ RUN dotnet restore src/Sonarr.sln
 
 COPY --from=frontend /build/_output/UI ./_output/UI
 
-# --- Publish Mono ---
+# ---- Sonarr.Mono ----
 WORKDIR /build/src/NzbDrone.Mono
-RUN dotnet publish Sonarr.Mono.csproj -c Release -f ${DOTNET_TFM} --runtime linux-x64 --self-contained false -o /app -p:TreatWarningsAsErrors=false -p:RunAnalyzersDuringBuild=false
+RUN dotnet publish Sonarr.Mono.csproj \
+    --configuration Release \
+    --framework ${DOTNET_TFM} \
+    --runtime linux-x64 \
+    --self-contained false \
+    --output /app \
+    -p:TreatWarningsAsErrors=false \
+    -p:RunAnalyzersDuringBuild=false
 
-# --- Publish Console ---
+# ---- Sonarr.Console ----
 WORKDIR /build/src/NzbDrone.Console
-RUN dotnet publish Sonarr.Console.csproj -c Release -f ${DOTNET_TFM} --runtime linux-x64 --self-contained false -o /app -p:TreatWarningsAsErrors=false -p:RunAnalyzersDuringBuild=false && cp -r /build/_output/UI /app/UI
+RUN dotnet publish Sonarr.Console.csproj \
+    --configuration Release \
+    --framework ${DOTNET_TFM} \
+    --runtime linux-x64 \
+    --self-contained false \
+    --output /app \
+    -p:TreatWarningsAsErrors=false \
+    -p:RunAnalyzersDuringBuild=false && \
+    cp -r /build/_output/UI /app/UI
 
 # ---------- Runtime ----------
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_RUNTIME_VERSION}
