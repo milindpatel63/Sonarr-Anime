@@ -415,10 +415,13 @@ namespace NzbDrone.Core.IndexerSearch
                 downloadDecisions.AddRange(decisions);
             }
 
-            foreach (var episode in episodesToSearch)
-            {
-                downloadDecisions.AddRange(await SearchAnime(series, episode, monitoredOnly, userInvokedSearch, interactiveSearch, true));
-            }
+            // foreach (var episode in episodesToSearch)
+            // {
+            //     downloadDecisions.AddRange(await SearchAnime(series, episode, monitoredOnly, userInvokedSearch, interactiveSearch, true));
+            // }
+            // Don't search individual episodes when searching for season packs
+            // This avoids wasting API hits and time on trackers that primarily use season packs (e.g., Nyaa, AnimeBytes)
+            // Individual episode searches are still available via EpisodeSearch() when explicitly requested
 
             return DeDupeDecisions(downloadDecisions);
         }

@@ -91,7 +91,14 @@ namespace NzbDrone.Core.Indexers.Nyaa
             {
                 if (Settings.AnimeStandardFormatSearch && searchCriteria.SeasonNumber > 0)
                 {
+                    // Search for both zero-padded (S02) and non-zero-padded (S2) season formats
+                    // Many anime releases use S2 instead of S02
                     pageableRequests.Add(GetPagedRequests($"{searchTitle}+s{searchCriteria.SeasonNumber:00}"));
+                    pageableRequests.Add(GetPagedRequests($"{searchTitle}+s{searchCriteria.SeasonNumber}"));
+
+                    // Also search for "Season 1" format which is common in release titles
+                    // e.g., "[TTGA] Hamefura-My Next Life as a Villainess: All Routes Lead to Doom! (Season 1) [BD]"
+                    pageableRequests.Add(GetPagedRequests($"{searchTitle}+Season+{searchCriteria.SeasonNumber}"));
                 }
             }
 

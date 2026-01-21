@@ -458,10 +458,31 @@ namespace NzbDrone.Core.Indexers.Newznab
 
                 foreach (var queryTitle in queryTitles)
                 {
+                    // Use tvsearch with season parameter (standard Newznab format)
                     pageableRequests.Add(GetPagedRequests(MaxPages,
                         Settings.AnimeCategories,
                         "tvsearch",
                         $"&q={NewsnabifyTitle(queryTitle)}&season={NewznabifySeasonNumber(searchCriteria.SeasonNumber)}"));
+                    
+                    // Also try search endpoint with various season formats
+                    // This helps with indexers (like Prowlarr->Nyaa) that may not handle tvsearch season parameter well
+                    // Format: title+s01
+                    pageableRequests.Add(GetPagedRequests(MaxPages,
+                        Settings.AnimeCategories,
+                        "search",
+                        $"&q={NewsnabifyTitle(queryTitle)}+s{searchCriteria.SeasonNumber:00}"));
+
+                    // Format: title+s1 (non-zero-padded)
+                    pageableRequests.Add(GetPagedRequests(MaxPages,
+                        Settings.AnimeCategories,
+                        "search",
+                        $"&q={NewsnabifyTitle(queryTitle)}+s{searchCriteria.SeasonNumber}"));
+
+                    // Format: title+Season+1 (matches releases like "(Season 1)")
+                    pageableRequests.Add(GetPagedRequests(MaxPages,
+                        Settings.AnimeCategories,
+                        "search",
+                        $"&q={NewsnabifyTitle(queryTitle)}+Season+{searchCriteria.SeasonNumber}"));
                 }
             }
 

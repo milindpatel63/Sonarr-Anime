@@ -1,0 +1,11 @@
+.git
+.github
+_artifacts
+_output
+_tests_*
+*.md
+docker/
+distribution/
+.vscode
+.idea
+node_modules
