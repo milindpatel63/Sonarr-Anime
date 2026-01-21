@@ -15,17 +15,17 @@ COPY src/ ./src/
 RUN dotnet restore src/Sonarr.sln
 COPY --from=frontend /build/_output/UI ./_output/UI
 WORKDIR /build/src/NzbDrone.Mono
-RUN dotnet publish -c Release -f net6.0.405 -o /app -r linux-x64 --self-contained false \
+RUN dotnet publish -c Release -f net6.0 -o /app -r linux-x64 --self-contained false \
     -p:TreatWarningsAsErrors=false \
     -p:RunAnalyzersDuringBuild=false
 WORKDIR /build/src/NzbDrone.Console
-RUN dotnet publish -c Release -f net6.0.405 -o /app -r linux-x64 --self-contained false \
+RUN dotnet publish -c Release -f net6.0 -o /app -r linux-x64 --self-contained false \
     -p:TreatWarningsAsErrors=false \
     -p:RunAnalyzersDuringBuild=false && \
     cp -r /build/_output/UI /app/UI
 
 # Runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0.405
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
 
 RUN apt-get update && \
