@@ -27,26 +27,24 @@ COPY --from=frontend /build/_output/UI ./_output/UI
 # ---- Sonarr.Mono ----
 WORKDIR /build/src/NzbDrone.Mono
 RUN dotnet publish \
-    --configuration Release \
-    --framework ${DOTNET_TFM} \
-    --runtime linux-x64 \
+    -c Release \
+    -f ${DOTNET_TFM} \
+    -r linux-x64 \
     --self-contained false \
-    --output /app \
+    -o /app \
     -p:TreatWarningsAsErrors=false \
-    -p:RunAnalyzersDuringBuild=false \
-    Sonarr.Mono.csproj
+    -p:RunAnalyzersDuringBuild=false
 
 # ---- Sonarr.Console ----
 WORKDIR /build/src/NzbDrone.Console
 RUN dotnet publish \
-    --configuration Release \
-    --framework ${DOTNET_TFM} \
-    --runtime linux-x64 \
+    -c Release \
+    -f ${DOTNET_TFM} \
+    -r linux-x64 \
     --self-contained false \
-    --output /app \
+    -o /app \
     -p:TreatWarningsAsErrors=false \
-    -p:RunAnalyzersDuringBuild=false \
-    Sonarr.Console.csproj && \
+    -p:RunAnalyzersDuringBuild=false && \
     cp -r /build/_output/UI /app/UI
 
 # ---------- Runtime ----------
