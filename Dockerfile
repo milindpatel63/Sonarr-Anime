@@ -24,13 +24,25 @@ RUN dotnet restore src/Sonarr.sln
 
 COPY --from=frontend /build/_output/UI ./_output/UI
 
+# --- Publish Mono ---
 WORKDIR /build/src/NzbDrone.Mono
-RUN dotnet publish -c Release -f ${DOTNET_TFM} -o /app -r linux-x64 --self-contained false \
+RUN dotnet publish Sonarr.Mono.csproj \
+    -c Release \
+    -f ${DOTNET_TFM} \
+    -r linux-x64 \
+    --self-contained false \
+    -o /app \
     -p:TreatWarningsAsErrors=false \
     -p:RunAnalyzersDuringBuild=false
 
+# --- Publish Console ---
 WORKDIR /build/src/NzbDrone.Console
-RUN dotnet publish -c Release -f ${DOTNET_TFM} -o /app -r linux-x64 --self-contained false \
+RUN dotnet publish Sonarr.Console.csproj \
+    -c Release \
+    -f ${DOTNET_TFM} \
+    -r linux-x64 \
+    --self-contained false \
+    -o /app \
     -p:TreatWarningsAsErrors=false \
     -p:RunAnalyzersDuringBuild=false && \
     cp -r /build/_output/UI /app/UI
