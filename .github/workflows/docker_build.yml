@@ -28,12 +28,11 @@ jobs:
         run: |
           SDK_VERSION=$(jq -r '.sdk.version' global.json)
           RUNTIME_VERSION=$(jq -r '.sdk.version | split(".")[:2] | join(".")' global.json)
-
-          echo "DOTNET_SDK_VERSION=$SDK_VERSION"
-          echo "DOTNET_RUNTIME_VERSION=$RUNTIME_VERSION"
+          SDK_MAJOR=$(jq -r '.sdk.version | split(".")[0]' global.json)
 
           echo "sdk=$SDK_VERSION" >> "$GITHUB_OUTPUT"
           echo "runtime=$RUNTIME_VERSION" >> "$GITHUB_OUTPUT"
+          echo "tfm=net${SDK_MAJOR}.0" >> "$GITHUB_OUTPUT"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -70,5 +69,6 @@ jobs:
           build-args: |
             DOTNET_SDK_VERSION=${{ steps.dotnet.outputs.sdk }}
             DOTNET_RUNTIME_VERSION=${{ steps.dotnet.outputs.runtime }}
+            DOTNET_TFM=${{ steps.dotnet.outputs.tfm }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
