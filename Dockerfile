@@ -1,5 +1,6 @@
 # syntax=docker/dockerfile:1.6
 
+# ---- Global build args (for FROM only) ----
 ARG DOTNET_SDK_VERSION
 ARG DOTNET_RUNTIME_VERSION
 ARG DOTNET_TFM
@@ -7,13 +8,19 @@ ARG DOTNET_TFM
 # ---------- Frontend ----------
 FROM node:20-alpine AS frontend
 WORKDIR /build
+
 COPY package.json yarn.lock* tsconfig.json ./
 RUN yarn install --frozen-lockfile
+
 COPY frontend ./frontend
 RUN yarn build
 
 # ---------- Backend ----------
 FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION} AS backend
+
+# 🔴 REDECLARE ARG(S) NEEDED AT RUNTIME
+ARG DOTNET_TFM
+
 WORKDIR /build
 
 COPY global.json ./
@@ -49,6 +56,7 @@ RUN dotnet publish \
 
 # ---------- Runtime ----------
 FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_RUNTIME_VERSION}
+
 WORKDIR /app
 
 RUN apt-get update && \
