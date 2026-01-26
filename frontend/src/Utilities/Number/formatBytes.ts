@@ -9,7 +9,7 @@ function formatBytes(input: string | number) {
 
   return `${filesize(size, {
     base: 2,
-    round: 1,
+    round: 2,
   })}`;
 }
 

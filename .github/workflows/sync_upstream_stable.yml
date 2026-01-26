@@ -55,6 +55,6 @@ jobs:
 
       - name: Push to fork
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} main
+          git push https://x-access-token:${SYNC_TOKEN}@github.com/${{ github.repository }} main
